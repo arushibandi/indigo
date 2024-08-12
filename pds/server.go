@@ -30,6 +30,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/ipfs/go-cid"
 	logging "github.com/ipfs/go-log"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/lestrrat-go/jwx/v2/jwt"
@@ -411,7 +412,8 @@ func (s *Server) RunAPIWithListener(listen net.Listener) error {
 		return c.String(200, "ok")
 	})
 
-	e.Use(middleware.JWTWithConfig(cfg), s.userCheckMiddleware)
+	jwt := echojwt.JWT(cfg)
+	e.Use(jwt, s.userCheckMiddleware)
 	s.RegisterHandlersComAtproto(e)
 
 	e.GET("/xrpc/com.atproto.sync.subscribeRepos", s.EventsHandler)
